@@ -31,13 +31,17 @@ namespace Algorithm
                 AddConstraint(constraints.GetRow(i), sign);
             
         }
+
+        
         
         public double[,] CreateSetOfData()
         {
-            int numberOfConstraints = Constraints.Count;
+            ValidateData();
+
+            int numberOfConstraints = GetNumberOfConstraints();
             int numberOfConstraintsWithGreaterSign = numberOfConstraints +
                                                      Constraints.Count(x => x.Sign == ConstraintSign.GreaterOrEqual);
-            int numberOfVariables = ObjectiveFunction.Length;
+            int numberOfVariables = GetNumberOfVariables();
             double [,] data = new double[3 + numberOfConstraints, 3 + numberOfConstraintsWithGreaterSign + numberOfVariables];
             FillArray(data, 0);
 
@@ -97,6 +101,35 @@ namespace Algorithm
 
             return data;
         }
+        
+        public int GetNumberOfVariables()
+        {
+            return ObjectiveFunction.Length;
+        }
+        
+        public int GetNumberOfConstraints()
+        {
+            return Constraints.Count;
+        }
+        
+        private void ValidateData()
+        {
+            if (ObjectiveFunction is null)
+                throw new ArgumentException("Objective function must be set");
+            
+            if (Constraints.Count == 0)
+                throw new ArgumentException("No Constraints added!");
+            
+            int numberOfVariables = ObjectiveFunction.Length;
+
+            foreach (Constraint constraint in Constraints)
+            {
+                double[] data = constraint.Data;
+                if (numberOfVariables + 1 != data.Length) 
+                    throw new ArgumentException($"Constrain {constraint} is not proper. There should be: " +
+                                                $"{numberOfVariables+1} variables");
+            }
+        }
 
         private void FillArray(double[,] array, double value)
         {
@@ -108,12 +141,11 @@ namespace Algorithm
                 }
             }
         }
-        
-        public void PrintData()
-        {
-            Console.WriteLine("Generated set of data");
-            double[,] data = CreateSetOfData();
 
+        public void PrintData() => PrintData(CreateSetOfData());
+
+        public static void PrintData(double[,] data)
+        {
             for (int i = 0; i < data.GetLength(0); i++)
             {
                 Console.Write("[\t");
@@ -125,6 +157,8 @@ namespace Algorithm
 
                 Console.WriteLine(']');
             }
+
+            Console.WriteLine('\n');
         }
         
         public struct Constraint
@@ -137,6 +171,8 @@ namespace Algorithm
                 Data = constraint;
                 this.Sign = sign;
             }
+
+            public override string ToString() => Data.ToString();
         }
     }
 }

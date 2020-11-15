@@ -1,3 +1,4 @@
+using System;
 using Algorithm;
 using NUnit.Framework;
 
@@ -16,7 +17,7 @@ namespace Tests
         [Test]
         public void Should_GenerateDataCorrectly_when_sampleDataIsGiven()
         {
-            SetObjectiveFunctionAndConstraints();
+            SetSampleObjectiveFunctionAndConstraints();
 
             double[,] expected =
             {
@@ -30,7 +31,7 @@ namespace Tests
             Assert.AreEqual(expected, data.CreateSetOfData());
         }
 
-        private void SetObjectiveFunctionAndConstraints()
+        private void SetSampleObjectiveFunctionAndConstraints()
         {
             double[] objectiveFunction = new[] {8.0, 10.0, 7.0};
             data.AddObjectiveFunction(objectiveFunction);
@@ -42,6 +43,15 @@ namespace Tests
             };
 
             data.AddConstraints(constarints, ConstraintSign.LessOrEqual);
+        }
+        
+        [Test]
+        public void should_throwArgumentException_when_wrongConstraintsDataGiven()
+        {
+            SetSampleObjectiveFunctionAndConstraints();
+            data.AddConstraint(new double[] {0.1, 2}, ConstraintSign.Equal);
+            
+            Assert.Throws<ArgumentException>(() => data.CreateSetOfData());
         }
     }
 }

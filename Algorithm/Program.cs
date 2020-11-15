@@ -7,7 +7,7 @@ namespace Algorithm
     {
         static void Main(string[] args)
         {
-            //create data to compute
+            //Create data to compute
             ISimplexData data = new SimplexData();
             
             //Enter coefficients
@@ -32,14 +32,13 @@ namespace Algorithm
             
             data.AddConstraints(constarints1, ConstraintSign.LessOrEqual);
             data.AddConstraints(constraints2, ConstraintSign.Equal);
-            
-            data.PrintData();
 
-            //set up algorithm
+            //Set up algorithm
             ISimplexAlgorithm simplexAlgorithm = new SimplexAlgorithm(Extreme.Minimum);
             simplexAlgorithm.EnterData(data);
             simplexAlgorithm.PrintTable();
 
+            //Calculate
             Result result = simplexAlgorithm.Compute();
 
             if (result == Optimal)
