@@ -8,11 +8,11 @@ namespace Algorithm
         static void Main(string[] args)
         {
             //create data to compute
-            SimplexData data = new SimplexData();
+            ISimplexData data = new SimplexData();
             
             //Enter coefficients
-            double[] targetFunction = new[] {70.5, 70, 100, 80};
-            data.AddObjectiveFunction(targetFunction);
+            double[] objectiveFunction = new[] {70.5, 70, 100, 80};
+            data.AddObjectiveFunction(objectiveFunction);
 
             double[,] constarints1 =
             {
@@ -33,7 +33,7 @@ namespace Algorithm
             data.AddConstraints(constraints2, ConstraintSign.Equal);
             
             //set up algorithm
-            SimplexAlgorithm simplexAlgorithm = new SimplexAlgorithm(Extreme.Minimum);
+            ISimplexAlgorithm simplexAlgorithm = new SimplexAlgorithm(Extreme.Minimum);
             simplexAlgorithm.EnterData(data);
             simplexAlgorithm.PrintTable();
 

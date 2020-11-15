@@ -1,6 +1,6 @@
 ﻿namespace Algorithm
 {
-    public class SimplexAlgorithm
+    public class SimplexAlgorithm : ISimplexAlgorithm
     {
         public Extreme Extreme { get; }
         public SimplexAlgorithm(Extreme extreme)
@@ -8,7 +8,7 @@
             this.Extreme = extreme;
         }
 
-        public void EnterData(SimplexData data)
+        public void EnterData(ISimplexData data)
         {
             
         }
