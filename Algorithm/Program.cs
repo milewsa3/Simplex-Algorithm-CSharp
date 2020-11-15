@@ -29,9 +29,12 @@ namespace Algorithm
                 {1, 0, 1, 0, 450},
                 {0, 1, 0, 1, 690}
             };
+            
             data.AddConstraints(constarints1, ConstraintSign.LessOrEqual);
             data.AddConstraints(constraints2, ConstraintSign.Equal);
             
+            data.PrintData();
+
             //set up algorithm
             ISimplexAlgorithm simplexAlgorithm = new SimplexAlgorithm(Extreme.Minimum);
             simplexAlgorithm.EnterData(data);
