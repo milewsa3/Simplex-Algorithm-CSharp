@@ -32,6 +32,7 @@ namespace Algorithm
             
             data.AddConstraints(constarints1, ConstraintSign.LessOrEqual);
             data.AddConstraints(constraints2, ConstraintSign.Equal);
+            
 
             //Set up algorithm
             ISimplexAlgorithm simplexAlgorithm = new SimplexAlgorithm(Extreme.Minimum);

@@ -13,7 +13,7 @@ namespace Algorithm
         public Boolean Computed = false;
         private int numberOfVariables;
         private int numberOfConstraints;
-        private double[,] _data;
+        private SimplexNumber[,] table;
 
         public SimplexAlgorithm(Extreme extreme)
         {
@@ -22,32 +22,77 @@ namespace Algorithm
 
         public SimplexAlgorithm(double[,] data)
         {
-            this._data = data;
+            this.table = ConvertToSimplexNumbersArray(data);
+        }
+
+        private SimplexNumber[,] ConvertToSimplexNumbersArray(double[,] data)
+        {
+            SimplexNumber[,] result = new SimplexNumber[data.GetLength(0), data.GetLength(1)];
+
+            for (int i = 0; i < result.GetLength(0); i++)
+            {
+                for (int j = 0; j < result.GetLength(1); j++)
+                {
+                    result[i, j] = (SimplexNumber)data[i, j];
+                }
+            }
+
+            return result;
         }
         
         public SimplexAlgorithm(double[,] data, Extreme extreme = Minimum)
         :this(extreme)
         {
-            this._data = data;
+            this.table = ConvertToSimplexNumbersArray(data);
         }
 
         public void EnterData(ISimplexData simplexData)
         {
-            _data = simplexData.CreateSetOfData();
+            double[,] doubleData = simplexData.CreateSetOfData();
+            table = ConvertToSimplexNumbersArray(doubleData);
             numberOfVariables = simplexData.GetNumberOfVariables();
             numberOfConstraints = simplexData.GetNumberOfConstraints();
+            CalculateOptimizationIndicators();
+        }
+
+        private void CalculateOptimizationIndicators()
+        {
+            for (int i = 0; i < numberOfVariables + numberOfConstraints; i++)
+            {
+                SimplexNumber sum = new SimplexNumber();
+                
+                for (int j = 0; j < numberOfConstraints; j++)
+                {
+                    sum += table[2 + j, 2 + i] * table[2 + j, 0];
+                }
+
+                table[table.GetLength(0) - 1, 2 + i] = sum - table[0, 2 + i];
+                Console.WriteLine(sum);
+            }
         }
 
         public void PrintTable()
         {
-            SimplexData.PrintData(_data);
+            for (int i = 0; i < table.GetLength(0); i++)
+            {
+                Console.Write("[\t");
+
+                for (int j = 0; j < table.GetLength(1); j++)
+                {
+                    Console.Write(table[i,j] + " \t ");
+                }
+
+                Console.WriteLine(']');
+            }
+
+            Console.WriteLine('\n');
         }
 
         public Result Compute()
         {
             ValidateDataBeforeComputing();
             
-            Result result = Compute(_data);
+            Result result = Compute(table);
             Computed = true;
 
             return result;
@@ -55,11 +100,11 @@ namespace Algorithm
         
         private void ValidateDataBeforeComputing()
         {
-            if (_data is null) 
+            if (table is null) 
                 throw new ArgumentException("Data is not set");
         }
         
-        private Result Compute(double[,] data)
+        private Result Compute(SimplexNumber[,] data)
         {
             if (TableIsOptimal(data))
                 return Optimal;
@@ -74,7 +119,7 @@ namespace Algorithm
             return Compute();
         }
         
-        private bool TableIsOptimal(double[,] data)
+        private bool TableIsOptimal(SimplexNumber[,] data)
         {
             if (Extreme == Maximum)
             {
@@ -98,17 +143,17 @@ namespace Algorithm
             return false;
         }
 
-        private int findPivotColumn(double[,] data)
+        private int findPivotColumn(SimplexNumber[,] data)
         {
             throw new NotImplementedException();
         }
         
-        private int findPivotRow(double[,] data)
+        private int findPivotRow(SimplexNumber[,] data)
         {
             throw new NotImplementedException();
         }
         
-        private void formNextTable(double[,] data)
+        private void formNextTable(SimplexNumber[,] data)
         {
             throw new NotImplementedException();
         }
@@ -124,7 +169,7 @@ namespace Algorithm
         {
             CheckIfComputed();
 
-            return _data.GetUpperBound(1);
+            return table.GetUpperBound(1);
         }
 
         private void CheckIfComputed()

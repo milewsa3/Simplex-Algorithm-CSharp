@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Tests
 {
-    public class Tests
+    public class SimplexDataTests
     {
         private ISimplexData data;
         
