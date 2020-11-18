@@ -101,6 +101,27 @@ namespace Algorithm
 
             return data;
         }
+
+        public SimplexNumber[,] CreateSetOfSimplexData()
+        {
+            double[,] data = CreateSetOfData();
+            return ConvertToSimplexNumbersArray(data);
+        }
+        
+        public static SimplexNumber[,] ConvertToSimplexNumbersArray(double[,] data)
+        {
+            SimplexNumber[,] result = new SimplexNumber[data.GetLength(0), data.GetLength(1)];
+
+            for (int i = 0; i < result.GetLength(0); i++)
+            {
+                for (int j = 0; j < result.GetLength(1); j++)
+                {
+                    result[i, j] = (SimplexNumber)data[i, j];
+                }
+            }
+
+            return result;
+        }
         
         public int GetNumberOfVariables()
         {

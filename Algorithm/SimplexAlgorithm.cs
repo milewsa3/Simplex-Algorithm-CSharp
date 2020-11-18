@@ -22,34 +22,21 @@ namespace Algorithm
 
         public SimplexAlgorithm(double[,] data)
         {
-            this.table = ConvertToSimplexNumbersArray(data);
+            this.table = SimplexData.ConvertToSimplexNumbersArray(data);
         }
 
-        private SimplexNumber[,] ConvertToSimplexNumbersArray(double[,] data)
-        {
-            SimplexNumber[,] result = new SimplexNumber[data.GetLength(0), data.GetLength(1)];
-
-            for (int i = 0; i < result.GetLength(0); i++)
-            {
-                for (int j = 0; j < result.GetLength(1); j++)
-                {
-                    result[i, j] = (SimplexNumber)data[i, j];
-                }
-            }
-
-            return result;
-        }
+        
         
         public SimplexAlgorithm(double[,] data, Extreme extreme = Minimum)
         :this(extreme)
         {
-            this.table = ConvertToSimplexNumbersArray(data);
+            this.table = SimplexData.ConvertToSimplexNumbersArray(data);
         }
 
         public void EnterData(ISimplexData simplexData)
         {
             double[,] doubleData = simplexData.CreateSetOfData();
-            table = ConvertToSimplexNumbersArray(doubleData);
+            table = SimplexData.ConvertToSimplexNumbersArray(doubleData);
             numberOfVariables = simplexData.GetNumberOfVariables();
             numberOfConstraints = simplexData.GetNumberOfConstraints();
             CalculateOptimizationIndicators();
@@ -75,11 +62,11 @@ namespace Algorithm
         {
             for (int i = 0; i < table.GetLength(0); i++)
             {
-                Console.Write("[\t");
+                Console.Write("[" + "".PadRight(14,  ' '));
 
                 for (int j = 0; j < table.GetLength(1); j++)
                 {
-                    Console.Write(table[i,j] + " \t ");
+                    Console.Write(table[i,j].ToString().PadRight(14,' ') + "");
                 }
 
                 Console.WriteLine(']');

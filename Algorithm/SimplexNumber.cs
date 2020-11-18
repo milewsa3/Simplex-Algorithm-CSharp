@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Algorithm
 {
@@ -24,9 +25,24 @@ namespace Algorithm
                 a.InfinityValue - b.InfinityValue);
 
         public static SimplexNumber operator *(SimplexNumber a, SimplexNumber b)
-            => new SimplexNumber(
-                a.StandardValue * b.StandardValue,
+        {
+            bool aHasInf = a.InfinityValue != 0;
+            bool bHasInf = b.InfinityValue != 0;
+
+            if (aHasInf && !bHasInf)
+            {
+                return new SimplexNumber(a.StandardValue * b.StandardValue,
+                    a.InfinityValue * (int)b.StandardValue);
+            }
+            if (!aHasInf && bHasInf)
+            {
+                return new SimplexNumber(b.StandardValue * a.StandardValue,
+                    b.InfinityValue * (int)a.StandardValue);
+            }
+            
+            return new SimplexNumber(a.StandardValue * b.StandardValue,
                 a.InfinityValue * b.InfinityValue);
+        }
 
         public static SimplexNumber operator /(SimplexNumber a, SimplexNumber b)
             => new SimplexNumber(
@@ -74,11 +90,24 @@ namespace Algorithm
         }
         
         public static implicit operator double(SimplexNumber num) => num.StandardValue;
-        public static explicit operator SimplexNumber(double dbl) => new SimplexNumber(dbl);
+
+        public static explicit operator SimplexNumber(double dbl) => 
+            double.IsInfinity(dbl)
+            ? (double.IsPositiveInfinity(dbl) ? new SimplexNumber(0, 1) : new SimplexNumber(0, -1))
+            : new SimplexNumber(dbl);
 
         public override string ToString()
         {
-            return InfinityValue != 0 ? $"{InfinityValue}M + {StandardValue}" : $"{StandardValue}";
+            bool hasStd = StandardValue.CompareTo(0) != 0;
+            bool hasInf = InfinityValue != 0;
+
+            if (hasInf && hasStd)
+                return $"{InfinityValue}M + {StandardValue}";
+            if (hasInf)
+                return $"{InfinityValue}M";
+            
+
+            return $"{StandardValue}";
         }
         
         public bool Equals(SimplexNumber other)
