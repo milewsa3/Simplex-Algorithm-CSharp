@@ -10,7 +10,7 @@ namespace Tests
         public void ToStringTest()
         {
             SimplexNumber number = new SimplexNumber(10,2);
-            string expected = "2M + (10)";
+            string expected = "2M + 10";
             string actual = number.ToString();
             
             AreEqual(expected, actual);
@@ -64,6 +64,42 @@ namespace Tests
             
             AreEqual(3.4, actual.StandardValue);
             AreEqual(0, actual.InfinityValue);
+        }
+
+        [Test]
+        public void AddingTest()
+        {
+            SimplexNumber actual = new SimplexNumber();
+            SimplexNumber toAdd = new SimplexNumber(14);
+            actual += toAdd;
+            
+            SimplexNumber expected = new SimplexNumber(14);
+            
+            AreEqual(expected, actual);
+        }
+        
+        [Test]
+        public void AddingTest2()
+        {
+            SimplexNumber actual = new SimplexNumber(1);
+            SimplexNumber toAdd = new SimplexNumber(14,-1);
+            actual += toAdd;
+            
+            SimplexNumber expected = new SimplexNumber(15, -1);
+            
+            AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void MultiplyingTest()
+        {
+            SimplexNumber num1 = new SimplexNumber(0, 1);
+            SimplexNumber num2 = new SimplexNumber(1);
+            
+            SimplexNumber actual = num1 * num2;
+            SimplexNumber expected = new SimplexNumber(0, 1);
+
+            AreEqual(expected, actual);
         }
     }
 }

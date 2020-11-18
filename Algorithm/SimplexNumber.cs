@@ -39,15 +39,18 @@ namespace Algorithm
                 return new SimplexNumber(b.StandardValue * a.StandardValue,
                     b.InfinityValue * (int)a.StandardValue);
             }
-            
+
             return new SimplexNumber(a.StandardValue * b.StandardValue,
                 a.InfinityValue * b.InfinityValue);
         }
 
         public static SimplexNumber operator /(SimplexNumber a, SimplexNumber b)
-            => new SimplexNumber(
-                a.StandardValue / b.StandardValue,
-                a.InfinityValue / b.InfinityValue);
+        {
+            double stdVal = b.StandardValue == 0 ? 0 : a.StandardValue / b.StandardValue;
+            int infVal = b.InfinityValue == 0 ? 0 : a.InfinityValue / b.InfinityValue;
+
+            return new SimplexNumber(stdVal, infVal);
+        }
 
         public static bool operator ==(SimplexNumber a, SimplexNumber b)
             => (a.StandardValue.CompareTo(b.StandardValue) == 0 && a.InfinityValue.CompareTo(b.InfinityValue) == 0);
@@ -88,7 +91,7 @@ namespace Algorithm
                 ? a.InfinityValue.CompareTo(b.InfinityValue) < 0
                 : a.StandardValue.CompareTo(b.StandardValue) < 0;
         }
-        
+
         public static implicit operator double(SimplexNumber num) => num.StandardValue;
 
         public static explicit operator SimplexNumber(double dbl) => 
