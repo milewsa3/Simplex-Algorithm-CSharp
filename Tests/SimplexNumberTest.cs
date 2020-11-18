@@ -101,5 +101,51 @@ namespace Tests
 
             AreEqual(expected, actual);
         }
+
+        [Test]
+        public void DividingTest()
+        {
+            SimplexNumber num1 = new SimplexNumber(20);
+            SimplexNumber num2 = new SimplexNumber(8);
+
+            SimplexNumber actual = num1 / num2;
+            SimplexNumber expected = new SimplexNumber(2.5);
+            
+            AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void CmpTest1()
+        {
+            SimplexNumber num1 = new SimplexNumber(-60);
+            SimplexNumber num2 = new SimplexNumber(-70);
+            
+            AreEqual(true, num1 > num2);
+        }
+        
+        [Test]
+        public void CmpTest2()
+        {
+            SimplexNumber num1 = new SimplexNumber(60,-1);
+            SimplexNumber num2 = new SimplexNumber(0);
+            
+            AreEqual(true, num1 < num2);
+        }
+
+        [Test]
+        public void CmpTest3()
+        {
+            SimplexNumber num = new SimplexNumber(-70.5, 1);
+            
+            AreEqual(true, num > (SimplexNumber)0);
+        }
+        
+        [Test]
+        public void CmpTest4()
+        {
+            SimplexNumber num = new SimplexNumber(-70.5, 1);
+            
+            AreEqual(false, num > 0);//!!
+        }
     }
 }

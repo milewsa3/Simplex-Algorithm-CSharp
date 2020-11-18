@@ -60,36 +60,34 @@ namespace Algorithm
 
         public static bool operator >(SimplexNumber a, SimplexNumber b)
         {
-            return a.InfinityValue.CompareTo(b.InfinityValue) != 0
-                ? a.InfinityValue.CompareTo(b.InfinityValue) > 0
-                : a.StandardValue.CompareTo(b.StandardValue) > 0;
+            bool aHasInf = a.InfinityValue != 0;
+            bool bHasInf = b.InfinityValue != 0;
+
+            if (aHasInf && bHasInf)
+                return a.InfinityValue > b.InfinityValue;
+
+            if (!aHasInf && bHasInf)
+                return b.InfinityValue < 0;
+
+            if (aHasInf)
+                return a.InfinityValue > 0;
+
+            return a.StandardValue > b.StandardValue;
         }
 
         public static bool operator <(SimplexNumber a, SimplexNumber b)
         {
-            return a.InfinityValue.CompareTo(b.InfinityValue) != 0
-                ? a.InfinityValue.CompareTo(b.InfinityValue) < 0
-                : a.StandardValue.CompareTo(b.StandardValue) < 0;
+            return !(a > b);
         }
 
         public static bool operator >=(SimplexNumber a, SimplexNumber b)
         {
-            if (a == b)
-                return true;
-
-            return a.InfinityValue.CompareTo(b.InfinityValue) != 0
-                ? a.InfinityValue.CompareTo(b.InfinityValue) > 0
-                : a.StandardValue.CompareTo(b.StandardValue) > 0;
+            return a == b || a > b;
         }
 
         public static bool operator <=(SimplexNumber a, SimplexNumber b)
         {
-            if (a == b)
-                return true;
-
-            return a.InfinityValue.CompareTo(b.InfinityValue) != 0
-                ? a.InfinityValue.CompareTo(b.InfinityValue) < 0
-                : a.StandardValue.CompareTo(b.StandardValue) < 0;
+            return a == b || a < b;
         }
 
         public static implicit operator double(SimplexNumber num) => num.StandardValue;

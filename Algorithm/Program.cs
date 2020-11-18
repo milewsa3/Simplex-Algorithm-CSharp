@@ -36,7 +36,6 @@ namespace Algorithm
             //Set up algorithm
             ISimplexAlgorithm simplexAlgorithm = new SimplexAlgorithm(Extreme.Minimum);
             simplexAlgorithm.EnterData(data);
-            simplexAlgorithm.PrintTable();
 
             //Calculate
             Result result = simplexAlgorithm.Compute();
@@ -47,7 +46,8 @@ namespace Algorithm
                 double[] variables = simplexAlgorithm.GetComputedVariables();
                 double minimum = simplexAlgorithm.GetExtreme();
 
-                Console.WriteLine("Variables: " + variables);
+                Console.WriteLine("Variables");
+                Console.WriteLine("[{0}]", string.Join(", ", variables));
                 Console.WriteLine("Minimum: " + minimum);
             }
             else if (result == Unbounded)

@@ -93,8 +93,11 @@ namespace Algorithm
         private Result Compute(SimplexNumber[,] data)
         {
             if (TableIsOptimal(data))
+            {
+                table = data;
                 return Optimal;
-            
+            }
+
             int pivotColumn = FindPivotColumn(data);
             int pivotRow = FindPivotRow(data, pivotColumn);
             if (pivotRow == -1)
@@ -104,29 +107,18 @@ namespace Algorithm
             
             return Compute(newTable);
         }
-        
+
         private bool TableIsOptimal(SimplexNumber[,] data)
         {
-            if (Extreme == Maximum)
+            for (int i = 0; i < numberOfVariables + numberOfConstraints; i++)
             {
-                for (int i = 0; i < numberOfVariables + numberOfConstraints; i++)
+                if (data[data.GetLength(0) - 1, 2 + i] > (SimplexNumber)0)
                 {
-                    if (data[data.GetLength(0) - 1, 2 + i] <= 0)
-                        return false;
-                }
-
-                return true;
-            }
-            else
-            {
-                for (int i = 0; i < numberOfVariables + numberOfConstraints; i++)
-                {
-                    if (data[data.GetLength(0) - 1, 2 + i] >= 0)
-                        return false;
+                    return false;
                 }
             }
 
-            return false;
+            return true;
         }
 
         private int FindPivotColumn(SimplexNumber[,] data)
@@ -153,14 +145,14 @@ namespace Algorithm
                 if (data[2+i, pivotCol] == 0 )
                     continue;
 
-                if (rowIndex == -1)
+                if (rowIndex == -1 && data[2 + i, n - 1] / data[2 + i, pivotCol] > 0)
                 {
                     rowIndex = i;
                     value = data[2 + i, n - 1] / data[2 + i, pivotCol];
                     continue;
                 }
 
-                if ((data[2 + i, n - 1] / data[2 + i, pivotCol]) < value)
+                if (((data[2 + i, n - 1] / data[2 + i, pivotCol]) < value) && (data[2 + i, n - 1] / data[2 + i, pivotCol] > 0))
                 {
                     rowIndex = i;
                     value = data[2 + i, n - 1] / data[2 + i, pivotCol];
@@ -201,7 +193,7 @@ namespace Algorithm
 
             for (int i = 0; i < numberOfConstraints; i++)
             {
-                if (i + 2 == pivotCol)
+                if (i + 2 == pivotRow)
                     continue;
 
                 if (data[2 + i, pivotCol] == 0)
@@ -234,9 +226,6 @@ namespace Algorithm
                 newTable[newTable.GetLength(0) - 1, 2 + i] = sum - newTable[0, 2 + i];
             }
 
-            Console.WriteLine("FORM NEW TABLE");
-            PrintTable(newTable);
-            
             return newTable;
         }
 
@@ -244,14 +233,59 @@ namespace Algorithm
         {
             CheckIfComputed();
 
-            return new double[] {};
+            double[] variables = ComputeVariables();
+
+            return variables;
+        }
+
+        private double[] ComputeVariables()
+        {
+            double[] variables = new double[numberOfVariables];
+
+            for (int i = 0; i < numberOfVariables; i++)
+            {
+                bool wasOne = false;
+                int oneIndx = -1;
+                
+                for (int j = 0; j < numberOfConstraints; j++)
+                {
+                    if (table[2 + j, 2 + i] != 1 && table[2 + j, 2 + i] != 0)
+                        break;
+
+                    if (wasOne && table[2 + j, 2 + i] == 1)
+                    {
+                        wasOne = false;
+                        break;
+                    }
+                    
+                    if (table[2 + j, 2 + i] == 1)
+                    {
+                        wasOne = true;
+                        oneIndx = j;
+                    }
+                }
+
+                if (wasOne)
+                {
+                    variables[i] = table[oneIndx+2,table.GetLength(1)-1];
+                }
+                else
+                {
+                    variables[i] = 0;
+                }
+            }
+
+            return variables;
         }
 
         public double GetExtreme()
         {
             CheckIfComputed();
 
-            return table.GetUpperBound(1);
+            int n = table.GetLength(0);
+            int m = table.GetLength(1);
+
+            return table[n - 1, m - 1];
         }
 
         private void CheckIfComputed()
