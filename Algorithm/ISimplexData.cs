@@ -6,8 +6,9 @@
         void AddConstraint(double[] constraint, ConstraintSign sign);
         void AddConstraints(double[,] constraints, ConstraintSign sign);
         public double[,] CreateSetOfData();
-        void PrintData();
-        int GetNumberOfConstraints();
+        public SimplexNumber[,] CreateSetOfSimplexData();
         int GetNumberOfVariables();
+        int GetNumberOfConstraints();
+        void PrintData();
     }
 }

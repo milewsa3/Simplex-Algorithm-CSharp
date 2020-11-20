@@ -34,8 +34,8 @@ namespace Algorithm
             data.AddConstraints(constraints2, ConstraintSign.Equal);
             
             //Set up algorithm
-            ISimplexAlgorithm simplexAlgorithm = new SimplexAlgorithm(Extreme.Minimum);
-            simplexAlgorithm.EnterData(data);
+            ISimplexAlgorithm simplexAlgorithm = new SimplexAlgorithm();
+            simplexAlgorithm.SetData(data);
 
             //Calculate
             Result result = simplexAlgorithm.Compute();
@@ -44,7 +44,7 @@ namespace Algorithm
             {
                 Console.WriteLine("Result is optimal");
                 double[] variables = simplexAlgorithm.GetComputedVariables();
-                double minimum = simplexAlgorithm.GetExtreme();
+                double minimum = simplexAlgorithm.GetCalculatedExtreme();
 
                 Console.WriteLine("Variables");
                 Console.WriteLine("[{0}]", string.Join(", ", variables));
@@ -54,7 +54,6 @@ namespace Algorithm
             {
                 Console.WriteLine("ERROR: Result is unbounded");
             }
-
         }
     }
 }

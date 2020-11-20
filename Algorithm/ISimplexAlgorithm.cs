@@ -2,10 +2,9 @@
 {
     public interface ISimplexAlgorithm
     {
-        void EnterData(ISimplexData data);
-        void PrintTable();
+        void SetData(ISimplexData data);
         Result Compute();
         double[] GetComputedVariables();
-        double GetExtreme();
+        double GetCalculatedExtreme();
     }
 }

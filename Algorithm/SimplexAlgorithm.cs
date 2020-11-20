@@ -1,52 +1,38 @@
 ﻿using System;
-using static Algorithm.Extreme;
 using static Algorithm.Result;
 
 namespace Algorithm
 {
-    
-    
-    
     public class SimplexAlgorithm : ISimplexAlgorithm
     {
-        public Extreme Extreme { get; }
-        public Boolean Computed = false;
-        private int numberOfVariables;
-        private int numberOfConstraints;
-        private SimplexNumber[,] table;
+        private bool Computed { set; get; }
+        private SimplexNumber[,] _table;
+        private int _numberOfVariables;
+        private int _numberOfConstraints;
 
-        public SimplexAlgorithm(Extreme extreme)
+
+        public SimplexAlgorithm() {}
+
+        public SimplexAlgorithm(ISimplexData data)
+            => _table = data.CreateSetOfSimplexData();
+
+        public void SetData(ISimplexData data)
         {
-            Extreme = extreme;
+            _table = data.CreateSetOfSimplexData();
+
+            _numberOfVariables = data.GetNumberOfVariables();
+            _numberOfConstraints = data.GetNumberOfConstraints();
+
+            CalculateOptimizationIndicators(_table);
         }
 
-        public SimplexAlgorithm(double[,] data)
+        private void CalculateOptimizationIndicators(SimplexNumber[,] table)
         {
-            this.table = SimplexData.ConvertToSimplexNumbersArray(data);
-        }
-
-        public SimplexAlgorithm(double[,] data, Extreme extreme = Minimum)
-        :this(extreme)
-        {
-            this.table = SimplexData.ConvertToSimplexNumbersArray(data);
-        }
-
-        public void EnterData(ISimplexData simplexData)
-        {
-            double[,] doubleData = simplexData.CreateSetOfData();
-            table = SimplexData.ConvertToSimplexNumbersArray(doubleData);
-            numberOfVariables = simplexData.GetNumberOfVariables();
-            numberOfConstraints = simplexData.GetNumberOfConstraints();
-            CalculateOptimizationIndicators();
-        }
-        
-        private void CalculateOptimizationIndicators()
-        {
-            for (int i = 0; i < numberOfVariables + numberOfConstraints + 1; i++)
+            for (int i = 0; i < _numberOfVariables + _numberOfConstraints + 1; i++)
             {
                 SimplexNumber sum = new SimplexNumber();
-                
-                for (int j = 0; j < numberOfConstraints; j++)
+
+                for (int j = 0; j < _numberOfConstraints; j++)
                 {
                     sum += table[2 + j, 2 + i] * table[2 + j, 0];
                 }
@@ -55,46 +41,27 @@ namespace Algorithm
             }
         }
 
-        public void PrintTable() => PrintTable(table);
-
-        private void PrintTable(SimplexNumber[,] data)
-        {
-            for (int i = 0; i < data.GetLength(0); i++)
-            {
-                Console.Write("[" + "".PadRight(14,  ' '));
-
-                for (int j = 0; j < data.GetLength(1); j++)
-                {
-                    Console.Write(data[i,j].ToString().PadRight(14,' ') + "");
-                }
-
-                Console.WriteLine(']');
-            }
-
-            Console.WriteLine('\n');
-        }
-
         public Result Compute()
         {
             ValidateDataBeforeComputing();
-            
-            Result result = Compute(table);
+
+            Result result = Compute(_table);
             Computed = true;
 
             return result;
         }
-        
+
         private void ValidateDataBeforeComputing()
         {
-            if (table is null) 
+            if (_table is null)
                 throw new ArgumentException("Data is not set");
         }
-        
+
         private Result Compute(SimplexNumber[,] data)
         {
             if (TableIsOptimal(data))
             {
-                table = data;
+                _table = data;
                 return Optimal;
             }
 
@@ -104,15 +71,15 @@ namespace Algorithm
                 return Unbounded;
 
             SimplexNumber[,] newTable = FormNextTable(data, pivotColumn, pivotRow);
-            
+
             return Compute(newTable);
         }
 
         private bool TableIsOptimal(SimplexNumber[,] data)
         {
-            for (int i = 0; i < numberOfVariables + numberOfConstraints; i++)
+            for (int i = 0; i < _numberOfVariables + _numberOfConstraints; i++)
             {
-                if (data[data.GetLength(0) - 1, 2 + i] > (SimplexNumber)0)
+                if (data[data.GetLength(0) - 1, 2 + i] > (SimplexNumber) 0)
                 {
                     return false;
                 }
@@ -124,8 +91,8 @@ namespace Algorithm
         private int FindPivotColumn(SimplexNumber[,] data)
         {
             int maxIndx = 0;
-            
-            for (int i = 1; i < numberOfVariables + numberOfConstraints; i++)
+
+            for (int i = 1; i < _numberOfVariables + _numberOfConstraints; i++)
             {
                 if (data[data.GetLength(0) - 1, 2 + i] > data[data.GetLength(0) - 1, 2 + maxIndx])
                     maxIndx = i;
@@ -133,16 +100,16 @@ namespace Algorithm
 
             return maxIndx + 2;
         }
-        
+
         private int FindPivotRow(SimplexNumber[,] data, int pivotCol)
         {
             int rowIndex = -1;
             int n = data.GetLength(1);
             SimplexNumber value = new SimplexNumber(0);
-            
-            for (int i = 0; i < numberOfConstraints; i++)
+
+            for (int i = 0; i < _numberOfConstraints; i++)
             {
-                if (data[2+i, pivotCol] == 0 )
+                if (data[2 + i, pivotCol] == 0)
                     continue;
 
                 if (rowIndex == -1 && data[2 + i, n - 1] / data[2 + i, pivotCol] > 0)
@@ -152,7 +119,8 @@ namespace Algorithm
                     continue;
                 }
 
-                if (((data[2 + i, n - 1] / data[2 + i, pivotCol]) < value) && (data[2 + i, n - 1] / data[2 + i, pivotCol] > 0))
+                if (((data[2 + i, n - 1] / data[2 + i, pivotCol]) < value) &&
+                    (data[2 + i, n - 1] / data[2 + i, pivotCol] > 0))
                 {
                     rowIndex = i;
                     value = data[2 + i, n - 1] / data[2 + i, pivotCol];
@@ -161,7 +129,7 @@ namespace Algorithm
 
             return rowIndex + 2;
         }
-        
+
         private SimplexNumber[,] FormNextTable(SimplexNumber[,] data, int pivotCol, int pivotRow)
         {
             int n = data.GetLength(0);
@@ -175,7 +143,7 @@ namespace Algorithm
                 newTable[1, i] = data[1, i];
             }
 
-            for (int i = 0; i < numberOfConstraints; i++)
+            for (int i = 0; i < _numberOfConstraints; i++)
             {
                 newTable[2 + i, 0] = data[2 + i, 0];
                 newTable[2 + i, 1] = data[2 + i, 1];
@@ -186,45 +154,35 @@ namespace Algorithm
 
 
             SimplexNumber pivotCenter = data[pivotRow, pivotCol];
-            for (int i = 0; i < numberOfVariables + numberOfConstraints + 1; i++)
+            for (int i = 0; i < _numberOfVariables + _numberOfConstraints + 1; i++)
             {
                 newTable[pivotRow, 2 + i] = data[pivotRow, 2 + i] / pivotCenter;
             }
 
-            for (int i = 0; i < numberOfConstraints; i++)
+            for (int i = 0; i < _numberOfConstraints; i++)
             {
                 if (i + 2 == pivotRow)
                     continue;
 
                 if (data[2 + i, pivotCol] == 0)
                 {
-                    for (int j = 0; j < numberOfVariables + numberOfConstraints + 1; j++)
+                    for (int j = 0; j < _numberOfVariables + _numberOfConstraints + 1; j++)
                     {
                         newTable[2 + i, 2 + j] = data[2 + i, 2 + j];
                     }
-                    
+
                     continue;
                 }
 
 
-                SimplexNumber delta = (SimplexNumber)(-1) * data[2 + i, pivotCol];
-                for (int j = 0; j < numberOfVariables + numberOfConstraints + 1; j++)
+                SimplexNumber delta = (SimplexNumber) (-1) * data[2 + i, pivotCol];
+                for (int j = 0; j < _numberOfVariables + _numberOfConstraints + 1; j++)
                 {
                     newTable[2 + i, 2 + j] = data[2 + i, 2 + j] + delta * data[pivotRow, 2 + j];
                 }
             }
-            
-            for (int i = 0; i < numberOfVariables + numberOfConstraints + 1; i++)
-            {
-                SimplexNumber sum = new SimplexNumber();
-                
-                for (int j = 0; j < numberOfConstraints; j++)
-                {
-                    sum += newTable[2 + j, 2 + i] * newTable[2 + j, 0];
-                }
 
-                newTable[newTable.GetLength(0) - 1, 2 + i] = sum - newTable[0, 2 + i];
-            }
+            CalculateOptimizationIndicators(newTable);
 
             return newTable;
         }
@@ -240,25 +198,25 @@ namespace Algorithm
 
         private double[] ComputeVariables()
         {
-            double[] variables = new double[numberOfVariables];
+            double[] variables = new double[_numberOfVariables];
 
-            for (int i = 0; i < numberOfVariables; i++)
+            for (int i = 0; i < _numberOfVariables; i++)
             {
                 bool wasOne = false;
                 int oneIndx = -1;
-                
-                for (int j = 0; j < numberOfConstraints; j++)
+
+                for (int j = 0; j < _numberOfConstraints; j++)
                 {
-                    if (table[2 + j, 2 + i] != 1 && table[2 + j, 2 + i] != 0)
+                    if (Math.Abs(_table[2 + j, 2 + i] - 1) > 0.000001 && _table[2 + j, 2 + i] != 0)
                         break;
 
-                    if (wasOne && table[2 + j, 2 + i] == 1)
+                    if (wasOne && Math.Abs(_table[2 + j, 2 + i] - 1) < 0.000001)
                     {
                         wasOne = false;
                         break;
                     }
-                    
-                    if (table[2 + j, 2 + i] == 1)
+
+                    if (Math.Abs(_table[2 + j, 2 + i] - 1) < 0.000001)
                     {
                         wasOne = true;
                         oneIndx = j;
@@ -267,7 +225,7 @@ namespace Algorithm
 
                 if (wasOne)
                 {
-                    variables[i] = table[oneIndx+2,table.GetLength(1)-1];
+                    variables[i] = _table[oneIndx + 2, _table.GetLength(1) - 1];
                 }
                 else
                 {
@@ -278,20 +236,39 @@ namespace Algorithm
             return variables;
         }
 
-        public double GetExtreme()
+        public double GetCalculatedExtreme()
         {
             CheckIfComputed();
 
-            int n = table.GetLength(0);
-            int m = table.GetLength(1);
+            int n = _table.GetLength(0);
+            int m = _table.GetLength(1);
 
-            return table[n - 1, m - 1];
+            return _table[n - 1, m - 1];
         }
 
         private void CheckIfComputed()
         {
             if (!Computed)
                 throw new Exception("Values are not computed yet");
+        }
+
+        private void PrintTable() => PrintTable(_table);
+
+        private void PrintTable(SimplexNumber[,] data)
+        {
+            for (int i = 0; i < data.GetLength(0); i++)
+            {
+                Console.Write("[" + "".PadRight(14, ' '));
+
+                for (int j = 0; j < data.GetLength(1); j++)
+                {
+                    Console.Write(data[i, j].ToString().PadRight(14, ' ') + "");
+                }
+
+                Console.WriteLine(']');
+            }
+
+            Console.WriteLine('\n');
         }
     }
 }

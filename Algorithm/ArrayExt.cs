@@ -29,5 +29,38 @@ namespace Algorithm
 
             return result;
         }
+        
+        public static void Fill<T>(this T[] arr, T value ) {
+            for ( int i = 0; i < arr.Length;i++ ) {
+                arr[i] = value;
+            }
+        }
+        
+        public static void Fill<T>(this T[,] arr, T value ) {
+            for (int i = 0; i < arr.GetLength(0); i++)
+            {
+                for (int j = 0; j < arr.GetLength(1); j++)
+                {
+                    arr[i, j] = value;
+                }
+            }
+        }
+
+        public static void Print<T>(this T[,] arr)
+        {
+            for (int i = 0; i < arr.GetLength(0); i++)
+            {
+                Console.Write("[\t");
+
+                for (int j = 0; j < arr.GetLength(1); j++)
+                {
+                    Console.Write(arr[i, j] + " \t ");
+                }
+
+                Console.WriteLine(']');
+            }
+
+            Console.WriteLine('\n');
+        }
     }
 }

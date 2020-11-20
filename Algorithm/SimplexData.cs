@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -42,14 +41,11 @@ namespace Algorithm
             ValidateData();
 
             int numberOfConstraints = GetNumberOfConstraints();
-            int numberOfConstraintsWithGreaterSign = 
-                numberOfConstraints +
-                Constraints.Count(x => x.Sign == ConstraintSign.GreaterOrEqual);
-            
+
             int numberOfVariables = GetNumberOfVariables();
             double[,] data = new double[3 + numberOfConstraints,
-                3 + numberOfConstraintsWithGreaterSign + numberOfVariables];
-            FillArray(data, 0);
+                3 + numberOfConstraints + numberOfVariables];
+            data.Fill(0);
 
             int coefficients = 0;
             for (; coefficients < numberOfVariables; coefficients++)
@@ -80,7 +76,7 @@ namespace Algorithm
                 }
             }
 
-            for (int i = 0; i < numberOfConstraintsWithGreaterSign; i++)
+            for (int i = 0; i < numberOfConstraints; i++)
             {
                 data[2 + i, 0] = data[0, 2 + numberOfVariables + i];
                 data[2 + i, 1] = data[1, 2 + numberOfVariables + i];
@@ -108,13 +104,35 @@ namespace Algorithm
             return data;
         }
 
+        private void ValidateData()
+        {
+            if (ObjectiveFunction is null)
+                throw new ArgumentException("Objective function must be set");
+
+            if (Constraints.Count == 0)
+                throw new ArgumentException("No Constraints added!");
+
+            int numberOfVariables = ObjectiveFunction.Length;
+
+            foreach (Constraint constraint in Constraints)
+            {
+                double[] data = constraint.Data;
+                if (numberOfVariables + 1 != data.Length)
+                    throw new ArgumentException($"Constrain {constraint} is not proper. There should be: " +
+                                                $"{numberOfVariables + 1} variables");
+                
+                if (constraint.Sign == ConstraintSign.GreaterOrEqual)
+                    throw new NotSupportedException();
+            }
+        }
+
         public SimplexNumber[,] CreateSetOfSimplexData()
         {
             double[,] data = CreateSetOfData();
-            return ConvertToSimplexNumbersArray(data);
+            return ConvertToSimplexNumberArray(data);
         }
 
-        public static SimplexNumber[,] ConvertToSimplexNumbersArray(double[,] data)
+        private SimplexNumber[,] ConvertToSimplexNumberArray(double[,] data)
         {
             SimplexNumber[,] result = new SimplexNumber[data.GetLength(0), data.GetLength(1)];
 
@@ -139,59 +157,12 @@ namespace Algorithm
             return Constraints.Count;
         }
 
-        private void ValidateData()
-        {
-            if (ObjectiveFunction is null)
-                throw new ArgumentException("Objective function must be set");
-
-            if (Constraints.Count == 0)
-                throw new ArgumentException("No Constraints added!");
-
-            int numberOfVariables = ObjectiveFunction.Length;
-
-            foreach (Constraint constraint in Constraints)
-            {
-                double[] data = constraint.Data;
-                if (numberOfVariables + 1 != data.Length)
-                    throw new ArgumentException($"Constrain {constraint} is not proper. There should be: " +
-                                                $"{numberOfVariables + 1} variables");
-            }
-        }
-
-        private void FillArray(double[,] array, double value)
-        {
-            for (int i = 0; i < array.GetLength(0); i++)
-            {
-                for (int j = 0; j < array.GetLength(1); j++)
-                {
-                    array[i, j] = 0;
-                }
-            }
-        }
-
-        public void PrintData() => PrintData(CreateSetOfData());
-
-        public static void PrintData(double[,] data)
-        {
-            for (int i = 0; i < data.GetLength(0); i++)
-            {
-                Console.Write("[\t");
-
-                for (int j = 0; j < data.GetLength(1); j++)
-                {
-                    Console.Write(data[i, j] + " \t ");
-                }
-
-                Console.WriteLine(']');
-            }
-
-            Console.WriteLine('\n');
-        }
+        public void PrintData() => CreateSetOfData().Print();
 
         public struct Constraint
         {
-            public double[] Data { set; get; }
-            public ConstraintSign Sign { set; get; }
+            public double[] Data { private set; get; }
+            public ConstraintSign Sign { private set; get; }
 
             public Constraint(double[] constraint, ConstraintSign sign)
             {

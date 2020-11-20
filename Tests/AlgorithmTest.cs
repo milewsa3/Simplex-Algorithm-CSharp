@@ -11,7 +11,7 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
-            _algorithm = new SimplexAlgorithm(Extreme.Minimum);
+            _algorithm = new SimplexAlgorithm();
         }
 
         [Test]
@@ -19,14 +19,14 @@ namespace Tests
         {
             //given
             SimplexData data = SetupDataFromPlatform();
-            _algorithm.EnterData(data);
+            _algorithm.SetData(data);
 
             //when
             _algorithm.Compute();
 
             //then
             ValidateExtremeAndVariables(
-                _algorithm.GetExtreme(), _algorithm.GetComputedVariables(),
+                _algorithm.GetCalculatedExtreme(), _algorithm.GetComputedVariables(),
                 189145.50, new double[] {0, 450, 450, 0, 240, 450, 450, 0, 300});
         }
 
@@ -77,14 +77,14 @@ namespace Tests
         {
             //given
             ISimplexData data = SetupTwoPharmaciesAndProducers();
-            _algorithm.EnterData(data);
+            _algorithm.SetData(data);
 
             //when
             _algorithm.Compute();
 
             //than
             ValidateExtremeAndVariables(
-                _algorithm.GetExtreme(), _algorithm.GetComputedVariables(),
+                _algorithm.GetCalculatedExtreme(), _algorithm.GetComputedVariables(),
                 82425, new double[] {450, 450, 0, 240});
         }
 
