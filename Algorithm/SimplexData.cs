@@ -9,10 +9,16 @@ namespace Algorithm
     {
         private double[] ObjectiveFunction { get; set; }
         private IList<Constraint> Constraints { get; set; }
-        
+
         public SimplexData()
         {
             Constraints = new List<Constraint>();
+        }
+
+        public SimplexData(double[] objectiveFunction, IList<Constraint> constraints)
+        {
+            ObjectiveFunction = objectiveFunction;
+            Constraints = constraints;
         }
 
         public void AddObjectiveFunction(double[] objectiveFunction)
@@ -27,22 +33,22 @@ namespace Algorithm
 
         public void AddConstraints(double[,] constraints, ConstraintSign sign)
         {
-            for (int i=0;i<constraints.GetLength(0);i++)
+            for (int i = 0; i < constraints.GetLength(0); i++)
                 AddConstraint(constraints.GetRow(i), sign);
-            
         }
 
-        
-        
         public double[,] CreateSetOfData()
         {
             ValidateData();
 
             int numberOfConstraints = GetNumberOfConstraints();
-            int numberOfConstraintsWithGreaterSign = numberOfConstraints +
-                                                     Constraints.Count(x => x.Sign == ConstraintSign.GreaterOrEqual);
+            int numberOfConstraintsWithGreaterSign = 
+                numberOfConstraints +
+                Constraints.Count(x => x.Sign == ConstraintSign.GreaterOrEqual);
+            
             int numberOfVariables = GetNumberOfVariables();
-            double [,] data = new double[3 + numberOfConstraints, 3 + numberOfConstraintsWithGreaterSign + numberOfVariables];
+            double[,] data = new double[3 + numberOfConstraints,
+                3 + numberOfConstraintsWithGreaterSign + numberOfVariables];
             FillArray(data, 0);
 
             int coefficients = 0;
@@ -58,10 +64,10 @@ namespace Algorithm
                 {
                     data[1, 2 + coefficients] = coefficients + 1;
                     data[0, 2 + coefficients++] = 0;
-                    
+
                     data[1, 2 + coefficients] = coefficients + 1;
                     data[0, 2 + coefficients++] = double.PositiveInfinity;
-                } 
+                }
                 else if (constraint.Sign == ConstraintSign.Equal)
                 {
                     data[1, 2 + coefficients] = coefficients + 1;
@@ -88,7 +94,7 @@ namespace Algorithm
                 double[] cdata = cnstr.Data;
 
                 int j;
-                for (j = 0; j < cdata.Length-1; j++)
+                for (j = 0; j < cdata.Length - 1; j++)
                 {
                     data[2 + i, 2 + j] = cdata[j];
                 }
@@ -107,7 +113,7 @@ namespace Algorithm
             double[,] data = CreateSetOfData();
             return ConvertToSimplexNumbersArray(data);
         }
-        
+
         public static SimplexNumber[,] ConvertToSimplexNumbersArray(double[,] data)
         {
             SimplexNumber[,] result = new SimplexNumber[data.GetLength(0), data.GetLength(1)];
@@ -116,39 +122,39 @@ namespace Algorithm
             {
                 for (int j = 0; j < result.GetLength(1); j++)
                 {
-                    result[i, j] = (SimplexNumber)data[i, j];
+                    result[i, j] = (SimplexNumber) data[i, j];
                 }
             }
 
             return result;
         }
-        
+
         public int GetNumberOfVariables()
         {
             return ObjectiveFunction.Length;
         }
-        
+
         public int GetNumberOfConstraints()
         {
             return Constraints.Count;
         }
-        
+
         private void ValidateData()
         {
             if (ObjectiveFunction is null)
                 throw new ArgumentException("Objective function must be set");
-            
+
             if (Constraints.Count == 0)
                 throw new ArgumentException("No Constraints added!");
-            
+
             int numberOfVariables = ObjectiveFunction.Length;
 
             foreach (Constraint constraint in Constraints)
             {
                 double[] data = constraint.Data;
-                if (numberOfVariables + 1 != data.Length) 
+                if (numberOfVariables + 1 != data.Length)
                     throw new ArgumentException($"Constrain {constraint} is not proper. There should be: " +
-                                                $"{numberOfVariables+1} variables");
+                                                $"{numberOfVariables + 1} variables");
             }
         }
 
@@ -173,7 +179,7 @@ namespace Algorithm
 
                 for (int j = 0; j < data.GetLength(1); j++)
                 {
-                    Console.Write(data[i,j] + " \t ");
+                    Console.Write(data[i, j] + " \t ");
                 }
 
                 Console.WriteLine(']');
@@ -181,7 +187,7 @@ namespace Algorithm
 
             Console.WriteLine('\n');
         }
-        
+
         public struct Constraint
         {
             public double[] Data { set; get; }

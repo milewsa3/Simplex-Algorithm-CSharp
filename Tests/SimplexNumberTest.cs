@@ -7,145 +7,198 @@ namespace Tests
     public class SimplexNumberTest
     {
         [Test]
-        public void ToStringTest()
+        [TestCase(12)]
+        [TestCase(-321)]
+        [TestCase(412084127)]
+        public void Should_GiveValidateDescription_When_ToStringIsCalled(int value)
         {
-            SimplexNumber number = new SimplexNumber(10,2);
-            string expected = "2M + 10";
-            string actual = number.ToString();
+            //given
+            SimplexNumber number = new SimplexNumber(value, 2);
             
+            //when
+            string actual = number.ToString();
+            string expected = $"2M + {value}";
+            
+            //than
             AreEqual(expected, actual);
         }
 
         [Test]
-        public void AddingStandardValueAndInfinity()
+        public void Should_PrintOnlyInfinity_When_StandardValueIsZero()
         {
-            SimplexNumber num1 = new SimplexNumber(23, -2);
-            SimplexNumber num2 = new SimplexNumber(-3, -1);
-            SimplexNumber actual = num1 + num2;
-            double expectedStandard = 20.0;
-            int expectedInfinity = -3;
-
-            AreEqual(expectedStandard, actual.StandardValue);
-            AreEqual(expectedInfinity, actual.InfinityValue);
+            //given
+            SimplexNumber number = new SimplexNumber(0, 12);
+            
+            //when
+            string actual = number.ToString();
+            string expected = "12M";
+            
+            //than
+            AreEqual(expected, actual);
         }
 
         [Test]
-        public void EqualComparison()
+        public void Should_AddInfinityAndStandardNumbers_When_ThereAreSimplexNumsWithBothValues()
         {
+            //given
+            SimplexNumber num1 = new SimplexNumber(23, -2);
+            SimplexNumber num2 = new SimplexNumber(-3, -1);
+            
+            //when
+            SimplexNumber actual = num1 + num2;
+
+            //than
+            StandardValueAndInfinityValueAreEqual(actual, 20.0, -3);
+        }
+
+        private void StandardValueAndInfinityValueAreEqual(SimplexNumber num, double expectedStdVal, int expectedInfVal)
+        {
+            AreEqual(num.StandardValue, expectedStdVal);
+            AreEqual(num.InfinityValue, expectedInfVal);
+        }
+
+        [Test]
+        public void Should_EqualityCmpGiveTrue_WhenSimplexNumbsAreEqual()
+        {
+            //given
             SimplexNumber num1 = new SimplexNumber(23, -2);
             SimplexNumber num2 = new SimplexNumber(23, -2);
             
+            //than
             AreEqual(true, num1 == num2);
         }
 
         [Test]
-        public void GreaterComparison()
+        public void Should_GreaterCmpGiveTrue_WhenFirstNumbIsGreater()
         {
+            //given
             SimplexNumber num1 = new SimplexNumber(23, -2);
             SimplexNumber num2 = new SimplexNumber(23, -3);
-            
+
+            //than
             AreEqual(true, num1 > num2);
         }
 
-        [Test] 
-        public void LessOrEqualComparison()
+        [Test]
+        public void Should_LessOrEqualCmpGiveTrue_WhenFirstNumbIsLessOrEqual()
         {
+            //given
             SimplexNumber num1 = new SimplexNumber(15, 4);
             SimplexNumber num2 = new SimplexNumber(23, 4);
-            
+
+            //than
             AreEqual(true, num1 <= num2);
         }
 
         [Test]
-        public void BoxingTest()
+        public void Should_BoxValueProperly_When_SampleDataIsGiven()
         {
-            double sample = 3.4;
-            SimplexNumber actual = (SimplexNumber) sample;
-            
-            AreEqual(3.4, actual.StandardValue);
-            AreEqual(0, actual.InfinityValue);
+            //when
+            SimplexNumber actual = (SimplexNumber) 3.4;
+
+            //than
+            StandardValueAndInfinityValueAreEqual(actual, 3.4, 0);
         }
 
         [Test]
-        public void AddingTest()
+        public void Should_AddProperly_When_InfinityValueIsEmpty()
         {
+            //given
             SimplexNumber actual = new SimplexNumber();
             SimplexNumber toAdd = new SimplexNumber(14);
+            
+            //when
             actual += toAdd;
-            
-            SimplexNumber expected = new SimplexNumber(14);
-            
-            AreEqual(expected, actual);
-        }
-        
-        [Test]
-        public void AddingTest2()
-        {
-            SimplexNumber actual = new SimplexNumber(1);
-            SimplexNumber toAdd = new SimplexNumber(14,-1);
-            actual += toAdd;
-            
-            SimplexNumber expected = new SimplexNumber(15, -1);
-            
-            AreEqual(expected, actual);
+
+            //than
+            StandardValueAndInfinityValueAreEqual(actual, 14, 0);
         }
 
         [Test]
-        public void MultiplyingTest()
+        public void Should_AddProperly_When_ThereIsNegativeInf()
         {
+            //given
+            SimplexNumber actual = new SimplexNumber(1);
+            SimplexNumber toAdd = new SimplexNumber(14, -1);
+            
+            //when
+            actual += toAdd;
+
+            //than
+            StandardValueAndInfinityValueAreEqual(actual, 15, -1);
+        }
+
+        [Test]
+        public void Should_MultiplyProperly_When_StdValIsZero()
+        {
+            //given
             SimplexNumber num1 = new SimplexNumber(0, 1);
             SimplexNumber num2 = new SimplexNumber(1);
-            
-            SimplexNumber actual = num1 * num2;
-            SimplexNumber expected = new SimplexNumber(0, 1);
 
-            AreEqual(expected, actual);
+            //when
+            SimplexNumber actual = num1 * num2;
+            
+            //than
+            StandardValueAndInfinityValueAreEqual(actual, 0, 1);
         }
 
         [Test]
-        public void DividingTest()
+        public void Should_DivideProperly_When_NoInfValIsGiven()
         {
+            //given
             SimplexNumber num1 = new SimplexNumber(20);
             SimplexNumber num2 = new SimplexNumber(8);
 
+            //when
             SimplexNumber actual = num1 / num2;
-            SimplexNumber expected = new SimplexNumber(2.5);
             
-            AreEqual(expected, actual);
+            //than
+            StandardValueAndInfinityValueAreEqual(actual, 2.5, 0);
         }
 
         [Test]
-        public void CmpTest1()
+        public void Should_CompareProperly_When_NoInfValIsGiven()
         {
+            //given
             SimplexNumber num1 = new SimplexNumber(-60);
             SimplexNumber num2 = new SimplexNumber(-70);
-            
+
+            //than
             AreEqual(true, num1 > num2);
         }
-        
+
         [Test]
-        public void CmpTest2()
+        public void Should_CompareProperly_When_OneOfStdValIsZero()
         {
-            SimplexNumber num1 = new SimplexNumber(60,-1);
+            //given
+            SimplexNumber num1 = new SimplexNumber(60, -1);
             SimplexNumber num2 = new SimplexNumber(0);
-            
+
+            //than
             AreEqual(true, num1 < num2);
         }
 
         [Test]
-        public void CmpTest3()
+        public void Should_CompareProperly_When_BoxingOneOfTheValues()
         {
+            //given
             SimplexNumber num = new SimplexNumber(-70.5, 1);
-            
-            AreEqual(true, num > (SimplexNumber)0);
+
+            //than
+            AreEqual(true, num > (SimplexNumber) 0);
         }
-        
+
         [Test]
-        public void CmpTest4()
+        public void Should_ResultOfCmpBeFalse_When_ComparingSimplexNumberWithZero()
         {
+            //given
             SimplexNumber num = new SimplexNumber(-70.5, 1);
-            
-            AreEqual(false, num > 0);//!!
+
+            //than
+            //Result of comparison should be false,
+            //because SimplexNumber is casted to double,
+            //so the infinity value is lost
+            AreEqual(false, num > 0); 
         }
     }
 }
