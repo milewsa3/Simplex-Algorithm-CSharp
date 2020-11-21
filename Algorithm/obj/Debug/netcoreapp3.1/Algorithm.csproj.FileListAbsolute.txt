@@ -1,0 +1,13 @@
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.exe
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.deps.json
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.runtimeconfig.json
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.runtimeconfig.dev.json
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.dll
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\bin\Debug\netcoreapp3.1\Algorithm.pdb
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.csprojAssemblyReference.cache
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.AssemblyInfoInputs.cache
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.AssemblyInfo.cs
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.csproj.CoreCompileInputs.cache
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.dll
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.pdb
+C:\Users\amile\Desktop\C# projects\Algorithms\SimplexAlgorithm\Algorithm\obj\Debug\netcoreapp3.1\Algorithm.genruntimeconfig.cache
